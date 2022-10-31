@@ -13,12 +13,15 @@ services:
       - rabbitnet
     ports:
       # HOST:CONTAINER
+      - 15671:15671
       - 15672:15672
     volumes:
       - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
       - ./definitions.json:/var/lib/rabbitmq/definitions.json
       - ./mnesia/rmq0:/var/lib/rabbitmq/mnesia
-      - ./rabbitmq.conf:/etc/rabbitmq/conf.d/99-config.conf
+      - ./rmq0.conf:/etc/rabbitmq/conf.d/99-config.conf
+      - ./certs/rmq0:/etc/rabbitmq/certs
+      - ./certs/ca_certificates.pem:/etc/rabbitmq/ca_certificates.pem
   rmq1:
     image: rabbitmq:3-management
     hostname: rmq1
@@ -26,18 +29,21 @@ services:
       - rabbitnet
     ports:
       # HOST:CONTAINER
-      - 15673:15672
+      - 15673:15671
+      - 15674:15672
     volumes:
       - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
       - ./definitions.json:/var/lib/rabbitmq/definitions.json
-      - ./rabbitmq.conf:/etc/rabbitmq/conf.d/99-config.conf
       - ./mnesia/rmq1:/var/lib/rabbitmq/mnesia
+      - ./rmq1.conf:/etc/rabbitmq/conf.d/99-config.conf
+      - ./certs/rmq1:/etc/rabbitmq/certs
+      - ./certs/ca_certificates.pem:/etc/rabbitmq/ca_certificates.pem
   perf-test-rmq0:
     image: pivotalrabbitmq/perf-test:latest
     networks:
       - rabbitnet
     command:
-      - --uri=amqp://rmq0
+      - --uri=amqps://rmq0:5671
       - --servers-startup-timeout=120
       - --producers=0
       - --consumers=3
@@ -52,7 +58,7 @@ services:
     networks:
       - rabbitnet
     command:
-      - --uri=amqp://rmq1
+      - --uri=amqps://rmq1:5671
       - --servers-startup-timeout=120
       - --rate=1
       - --producers=3
