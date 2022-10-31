@@ -16,9 +16,9 @@ readonly rmq_certs="$curdir/certs"
 # This generates the CA, as well as server/client certs for rmq0
 make -C "$certs_root_dir" 'CN=rmq0'
 
-# This usese the CA above and generates the server/client certs for rmq1
-make -C "$certs_root_dir" 'CN=rmq1' gen-server
-make -C "$certs_root_dir" 'CN=rmq1' gen-client
+# This uses the CA above and generates the EXPIRED server/client certs for rmq1
+faketime 'last Friday 5 pm' make -C "$certs_root_dir" 'CN=rmq1' DAYS_OF_VALIDITY=1 gen-server
+faketime 'last Friday 5 pm' make -C "$certs_root_dir" 'CN=rmq1' DAYS_OF_VALIDITY=1 gen-client
 
 cp -vf "$ca_cert_pem" "$rmq_certs"
 
