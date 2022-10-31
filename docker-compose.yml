@@ -1,0 +1,68 @@
+version: '3'
+
+networks:
+  rabbitnet:
+    name: rabbitnet
+    driver: bridge
+
+services:
+  rmq0:
+    image: rabbitmq:3-management
+    hostname: rmq0
+    networks:
+      - rabbitnet
+    ports:
+      # HOST:CONTAINER
+      - 15672:15672
+    volumes:
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./definitions.json:/var/lib/rabbitmq/definitions.json
+      - ./mnesia/rmq0:/var/lib/rabbitmq/mnesia
+      - ./rabbitmq.conf:/etc/rabbitmq/conf.d/99-config.conf
+  rmq1:
+    image: rabbitmq:3-management
+    hostname: rmq1
+    networks:
+      - rabbitnet
+    ports:
+      # HOST:CONTAINER
+      - 15673:15672
+    volumes:
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./definitions.json:/var/lib/rabbitmq/definitions.json
+      - ./rabbitmq.conf:/etc/rabbitmq/conf.d/99-config.conf
+      - ./mnesia/rmq1:/var/lib/rabbitmq/mnesia
+  perf-test-rmq0:
+    image: pivotalrabbitmq/perf-test:latest
+    networks:
+      - rabbitnet
+    command:
+      - --uri=amqp://rmq0
+      - --servers-startup-timeout=120
+      - --producers=0
+      - --consumers=3
+      - --predeclared
+      - --queue=shoveled
+    depends_on:
+      - rmq0
+      - rmq1
+    restart: on-failure
+  perf-test-rmq1:
+    image: pivotalrabbitmq/perf-test:latest
+    networks:
+      - rabbitnet
+    command:
+      - --uri=amqp://rmq1
+      - --servers-startup-timeout=120
+      - --rate=1
+      - --producers=3
+      - --consumers=0
+      - --predeclared
+      - --exchange=amq.direct
+      - --routing-key=shoveled
+      - --flag=persistent
+      - --flag=mandatory
+    depends_on:
+      - rmq0
+      - rmq1
+    restart: on-failure
