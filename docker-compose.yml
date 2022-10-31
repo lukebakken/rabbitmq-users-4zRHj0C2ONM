@@ -20,7 +20,6 @@ services:
       - ./rmq0-defs.json:/etc/rabbitmq/definitions.json
       - ./mnesia/rmq0:/var/lib/rabbitmq/mnesia
       - ./rmq0.conf:/etc/rabbitmq/conf.d/99-config.conf
-      - ./rmq0.advanced.config:/etc/rabbitmq/advanced.config
       - ./certs/rmq0:/etc/rabbitmq/certs
       - ./certs/ca_certificates.pem:/etc/rabbitmq/ca_certificates.pem
   rmq1:
@@ -37,7 +36,6 @@ services:
       - ./rmq1-defs.json:/etc/rabbitmq/definitions.json
       - ./mnesia/rmq1:/var/lib/rabbitmq/mnesia
       - ./rmq1.conf:/etc/rabbitmq/conf.d/99-config.conf
-      - ./rmq1.advanced.config:/etc/rabbitmq/advanced.config
       - ./certs/rmq1:/etc/rabbitmq/certs
       - ./certs/ca_certificates.pem:/etc/rabbitmq/ca_certificates.pem
     depends_on:
@@ -47,7 +45,7 @@ services:
     networks:
       - rabbitnet
     command:
-      - --uri=amqps://rmq0:5671
+      - --uri=amqp://rmq0
       - --servers-startup-timeout=120
       - --rate=1
       - --producers=3
@@ -66,7 +64,7 @@ services:
     networks:
       - rabbitnet
     command:
-      - --uri=amqps://rmq1:5671
+      - --uri=amqp://rmq1
       - --servers-startup-timeout=120
       - --producers=0
       - --consumers=3
