@@ -36,11 +36,11 @@
         "dest-add-forward-headers": false,
         "dest-protocol": "amqp091",
         "dest-queue": "shoveled",
-        "dest-uri": "amqps://rmq1:5671?verify=verify_peer&cacertfile=/etc/rabbitmq/ca_certificates.pem&certfile=/etc/rabbitmq/certs/client_rmq0_certificate.pem&keyfile=/etc/rabbitmq/certs/client_rmq0_key.pem",
+        "dest-uri": "amqps://rmq1:5671?verify=verify_peer&cacertfile=/etc/rabbitmq/ca_certificate.pem&certfile=/etc/rabbitmq/certs/client_rmq0_certificate.pem&keyfile=/etc/rabbitmq/certs/client_rmq0_key.pem",
         "src-delete-after": "never",
         "src-protocol": "amqp091",
         "src-queue": "shoveled",
-        "src-uri": "amqps://rmq0:5671?verify=verify_peer&cacertfile=/etc/rabbitmq/ca_certificates.pem&certfile=/etc/rabbitmq/certs/client_rmq0_certificate.pem&keyfile=/etc/rabbitmq/certs/client_rmq0_key.pem"
+        "src-uri": "amqps://rmq0:5671?verify=verify_peer&cacertfile=/etc/rabbitmq/ca_certificate.pem&certfile=/etc/rabbitmq/certs/client_rmq0_certificate.pem&keyfile=/etc/rabbitmq/certs/client_rmq0_key.pem"
       },
       "vhost": "/",
       "component": "shovel",

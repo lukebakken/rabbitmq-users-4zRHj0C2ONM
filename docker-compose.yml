@@ -21,7 +21,7 @@ services:
       - ./mnesia/rmq0:/var/lib/rabbitmq/mnesia
       - ./rmq0.conf:/etc/rabbitmq/conf.d/99-config.conf
       - ./certs/rmq0:/etc/rabbitmq/certs
-      - ./certs/ca_certificates.pem:/etc/rabbitmq/ca_certificates.pem
+      - ./certs/ca_certificate.pem:/etc/rabbitmq/ca_certificate.pem
   rmq1:
     image: rabbitmq:3-management
     hostname: rmq1
@@ -37,7 +37,7 @@ services:
       - ./mnesia/rmq1:/var/lib/rabbitmq/mnesia
       - ./rmq1.conf:/etc/rabbitmq/conf.d/99-config.conf
       - ./certs/rmq1:/etc/rabbitmq/certs
-      - ./certs/ca_certificates.pem:/etc/rabbitmq/ca_certificates.pem
+      - ./certs/ca_certificate.pem:/etc/rabbitmq/ca_certificate.pem
     depends_on:
       - rmq0
   perf-test-rmq0:
