@@ -17,7 +17,7 @@ services:
       - 15672:15672
     volumes:
       - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ./definitions.json:/var/lib/rabbitmq/definitions.json
+      - ./rmq0-defs.json:/etc/rabbitmq/definitions.json
       - ./mnesia/rmq0:/var/lib/rabbitmq/mnesia
       - ./rmq0.conf:/etc/rabbitmq/conf.d/99-config.conf
       - ./certs/rmq0:/etc/rabbitmq/certs
@@ -33,11 +33,13 @@ services:
       - 15674:15672
     volumes:
       - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ./definitions.json:/var/lib/rabbitmq/definitions.json
+      - ./rmq1-defs.json:/etc/rabbitmq/definitions.json
       - ./mnesia/rmq1:/var/lib/rabbitmq/mnesia
       - ./rmq1.conf:/etc/rabbitmq/conf.d/99-config.conf
       - ./certs/rmq1:/etc/rabbitmq/certs
       - ./certs/ca_certificates.pem:/etc/rabbitmq/ca_certificates.pem
+    depends_on:
+      - rmq0
   perf-test-rmq0:
     image: pivotalrabbitmq/perf-test:latest
     networks:
@@ -45,10 +47,14 @@ services:
     command:
       - --uri=amqps://rmq0:5671
       - --servers-startup-timeout=120
-      - --producers=0
-      - --consumers=3
+      - --rate=1
+      - --producers=3
+      - --consumers=0
       - --predeclared
       - --queue=shoveled
+      - --routing-key=shoveled
+      - --flag=persistent
+      - --flag=mandatory
     depends_on:
       - rmq0
       - rmq1
@@ -60,14 +66,10 @@ services:
     command:
       - --uri=amqps://rmq1:5671
       - --servers-startup-timeout=120
-      - --rate=1
-      - --producers=3
-      - --consumers=0
+      - --producers=0
+      - --consumers=3
       - --predeclared
-      - --exchange=amq.direct
-      - --routing-key=shoveled
-      - --flag=persistent
-      - --flag=mandatory
+      - --queue=shoveled
     depends_on:
       - rmq0
       - rmq1

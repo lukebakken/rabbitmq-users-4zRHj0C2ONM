@@ -1,0 +1,79 @@
+{
+  "rabbit_version": "3.11.0",
+  "rabbitmq_version": "3.11.0",
+  "product_name": "RabbitMQ",
+  "product_version": "3.11.0",
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "GM/HrwohNk27yRvXYumgUT/qE9/cAs6VHFiHF8j/4BUy6mjJ",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": [
+        "administrator"
+      ],
+      "limits": {}
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [
+    {
+      "value": {
+        "ack-mode": "on-confirm",
+        "dest-add-forward-headers": false,
+        "dest-protocol": "amqp091",
+        "dest-queue": "shoveled",
+        "dest-uri": "amqp://rmq1",
+        "src-delete-after": "never",
+        "src-protocol": "amqp091",
+        "src-queue": "shoveled",
+        "src-uri": "amqp://rmq0"
+      },
+      "vhost": "/",
+      "component": "shovel",
+      "name": "shoveled-rmq1"
+    }
+  ],
+  "global_parameters": [
+    {
+      "name": "internal_cluster_id",
+      "value": "rabbitmq-cluster-id-Ttsimdn15Xqgmuc_-TtHjA"
+    }
+  ],
+  "policies": [],
+  "queues": [
+    {
+      "name": "shoveled",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    }
+  ],
+  "exchanges": [],
+  "bindings": [
+    {
+      "source": "amq.direct",
+      "vhost": "/",
+      "destination": "shoveled",
+      "destination_type": "queue",
+      "routing_key": "shoveled",
+      "arguments": {}
+    }
+  ]
+}
