@@ -36,11 +36,11 @@
         "dest-add-forward-headers": false,
         "dest-protocol": "amqp091",
         "dest-queue": "shoveled",
-        "dest-uri": "amqp://rmq1",
+        "dest-uri": "amqps://rmq1:5671",
         "src-delete-after": "never",
         "src-protocol": "amqp091",
         "src-queue": "shoveled",
-        "src-uri": "amqp://rmq0"
+        "src-uri": "amqps://rmq0:5671"
       },
       "vhost": "/",
       "component": "shovel",
