@@ -5,6 +5,15 @@
   "product_version": "3.11.0",
   "users": [
     {
+      "name": "O=client,CN=rmq0",
+      "password_hash": "+5F705AK1GblaVx5IBJ+ER+wB0eFp6nnCUFfw2LvHMEihH4v",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": [
+        "administrator"
+      ],
+      "limits": {}
+    },
+    {
       "name": "guest",
       "password_hash": "GM/HrwohNk27yRvXYumgUT/qE9/cAs6VHFiHF8j/4BUy6mjJ",
       "hashing_algorithm": "rabbit_password_hashing_sha256",
@@ -26,6 +35,13 @@
       "configure": ".*",
       "write": ".*",
       "read": ".*"
+    },
+    {
+      "user": "O=client,CN=rmq0",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
     }
   ],
   "topic_permissions": [],
@@ -36,11 +52,11 @@
         "dest-add-forward-headers": false,
         "dest-protocol": "amqp091",
         "dest-queue": "shoveled",
-        "dest-uri": "amqps://rmq1:5671?verify=verify_peer&cacertfile=/etc/rabbitmq/ca_certificate.pem&certfile=/etc/rabbitmq/certs/client_rmq0_certificate.pem&keyfile=/etc/rabbitmq/certs/client_rmq0_key.pem",
+        "dest-uri": "amqps://rmq1:5671?auth_mechanism=external",
         "src-delete-after": "never",
         "src-protocol": "amqp091",
         "src-queue": "shoveled",
-        "src-uri": "amqps://rmq0:5671?verify=verify_peer&cacertfile=/etc/rabbitmq/ca_certificate.pem&certfile=/etc/rabbitmq/certs/client_rmq0_certificate.pem&keyfile=/etc/rabbitmq/certs/client_rmq0_key.pem"
+        "src-uri": "amqps://rmq0:5671?auth_mechanism=external"
       },
       "vhost": "/",
       "component": "shovel",

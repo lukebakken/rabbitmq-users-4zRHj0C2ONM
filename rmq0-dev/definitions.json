@@ -6,7 +6,7 @@
   "users": [
     {
       "name": "guest",
-      "password_hash": "wvRN8iMYCxtj0dsB+pLESHJfl9Ec8yssvRk8dU9okemWTZdY",
+      "password_hash": "GM/HrwohNk27yRvXYumgUT/qE9/cAs6VHFiHF8j/4BUy6mjJ",
       "hashing_algorithm": "rabbit_password_hashing_sha256",
       "tags": [
         "administrator"
@@ -29,11 +29,28 @@
     }
   ],
   "topic_permissions": [],
-  "parameters": [],
+  "parameters": [
+    {
+      "value": {
+        "ack-mode": "on-confirm",
+        "dest-add-forward-headers": false,
+        "dest-protocol": "amqp091",
+        "dest-queue": "shoveled",
+        "dest-uri": "amqps://rmq1:5671?auth_mechanism=external",
+        "src-delete-after": "never",
+        "src-protocol": "amqp091",
+        "src-queue": "shoveled",
+        "src-uri": "amqps://rmq0:5681?auth_mechanism=external"
+      },
+      "vhost": "/",
+      "component": "shovel",
+      "name": "shoveled-rmq1"
+    }
+  ],
   "global_parameters": [
     {
       "name": "internal_cluster_id",
-      "value": "rabbitmq-cluster-id-c7-Bz0EylYIBz15G7Qeadw"
+      "value": "rabbitmq-cluster-id-Ttsimdn15Xqgmuc_-TtHjA"
     }
   ],
   "policies": [],
@@ -43,7 +60,9 @@
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
-      "arguments": {}
+      "arguments": {
+        "x-queue-type": "classic"
+      }
     }
   ],
   "exchanges": [],

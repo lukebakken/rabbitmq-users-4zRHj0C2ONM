@@ -1,51 +1,39 @@
 version: '3'
-
-networks:
-  rabbitnet:
-    name: rabbitnet
-    driver: bridge
-
 services:
   rmq0:
     image: rabbitmq:3-management
     hostname: rmq0
-    networks:
-      - rabbitnet
     ports:
       # HOST:CONTAINER
       - 15671:15671
       - 15672:15672
     volumes:
-      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ./rmq0-defs.json:/etc/rabbitmq/definitions.json
-      - ./mnesia/rmq0:/var/lib/rabbitmq/mnesia
-      - ./rmq0.conf:/etc/rabbitmq/conf.d/99-config.conf
       - ./certs/rmq0:/etc/rabbitmq/certs
-      - ./certs/ca_certificate.pem:/etc/rabbitmq/ca_certificate.pem
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./rmq0/advanced.config:/etc/rabbitmq/advanced.config
+      - ./rmq0/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rmq0/rabbitmq.conf:/etc/rabbitmq/conf.d/99-config.conf
   rmq1:
     image: rabbitmq:3-management
     hostname: rmq1
-    networks:
-      - rabbitnet
     ports:
       # HOST:CONTAINER
       - 15673:15671
       - 15674:15672
     volumes:
-      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ./rmq1-defs.json:/etc/rabbitmq/definitions.json
-      - ./mnesia/rmq1:/var/lib/rabbitmq/mnesia
-      - ./rmq1.conf:/etc/rabbitmq/conf.d/99-config.conf
       - ./certs/rmq1:/etc/rabbitmq/certs
-      - ./certs/ca_certificate.pem:/etc/rabbitmq/ca_certificate.pem
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./rmq1/advanced.config:/etc/rabbitmq/advanced.config
+      - ./rmq1/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rmq1/rabbitmq.conf:/etc/rabbitmq/conf.d/99-config.conf
     depends_on:
       - rmq0
   perf-test-rmq0:
     image: pivotalrabbitmq/perf-test:latest
-    networks:
-      - rabbitnet
+    entrypoint: ["java", "-Djavax.net.ssl.trustStore=/certs/client-truststore.pkcs12", "-Djavax.net.ssl.trustStorePassword=CzgiqOUso2k", "-Djavax.net.ssl.trustStoreType=PKCS12", "-Djavax.net.ssl.keyStore=/certs/client-keystore.pkcs12", "-Djavax.net.ssl.keyStorePassword=CzgiqOUso2k", "-Djavax.net.ssl.keyStoreType=PKCS12", "-jar", "/perf_test/perf-test.jar"]
     command:
-      - --uri=amqp://rmq0
+      - --uri=amqps://rmq0:5671
+      - --sasl-external
       - --servers-startup-timeout=120
       - --rate=1
       - --producers=3
@@ -55,21 +43,27 @@ services:
       - --routing-key=shoveled
       - --flag=persistent
       - --flag=mandatory
+    volumes:
+      - ./certs/rmq0/client-keystore.pkcs12:/certs/client-keystore.pkcs12
+      - ./certs/client-truststore.pkcs12:/certs/client-truststore.pkcs12
     depends_on:
       - rmq0
       - rmq1
     restart: on-failure
   perf-test-rmq1:
     image: pivotalrabbitmq/perf-test:latest
-    networks:
-      - rabbitnet
+    entrypoint: ["java", "-Djavax.net.ssl.trustStore=/certs/client-truststore.pkcs12", "-Djavax.net.ssl.trustStorePassword=CzgiqOUso2k", "-Djavax.net.ssl.trustStoreType=PKCS12", "-Djavax.net.ssl.keyStore=/certs/client-keystore.pkcs12", "-Djavax.net.ssl.keyStorePassword=CzgiqOUso2k", "-Djavax.net.ssl.keyStoreType=PKCS12", "-jar", "/perf_test/perf-test.jar"]
     command:
-      - --uri=amqp://rmq1
+      - --uri=amqps://rmq1:5671
+      - --sasl-external
       - --servers-startup-timeout=120
       - --producers=0
       - --consumers=3
       - --predeclared
       - --queue=shoveled
+    volumes:
+      - ./certs/rmq1/client-keystore.pkcs12:/certs/client-keystore.pkcs12
+      - ./certs/client-truststore.pkcs12:/certs/client-truststore.pkcs12
     depends_on:
       - rmq0
       - rmq1
